@@ -1,0 +1,259 @@
+{
+  "name": "LeetCode Solution Analysis and Optimization Feedback",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        320
+      ],
+      "id": "05332964-07c6-4246-839b-5af194b65180",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://leetcode.com/graphql",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"query getRecentSubmissions($username: String!) { recentSubmissionList(username: $username) { id title statusDisplay timestamp lang } }\",\n  \"variables\": {\n    \"username\": \"brGu3JXZbF\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        640,
+        320
+      ],
+      "id": "b7201723-b780-43be-a660-20f3a87ef1b1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1bcd4385-ec9d-40f2-abac-b87838f0834b",
+              "leftValue": "={{ $json.data.recentSubmissionList[0].statusDisplay }}",
+              "rightValue": "Accepted",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        848,
+        320
+      ],
+      "id": "b84edcb7-68c6-4145-b402-bcda8171ce09",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://leetcode.com/graphql",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "LEETCODE_SESSION=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiMTg3NzA2MDEiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJhbGxhdXRoLmFjY291bnQuYXV0aF9iYWNrZW5kcy5BdXRoZW50aWNhdGlvbkJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJmZWQ1MTk5MWEzMjk3Y2Q5MDcxYzEyMjIzNmI3NmNlMWVjNDE2NzY2OTZhNTM3MGFhODkwOTJkYmFkMjdiOTdiIiwic2Vzc2lvbl91dWlkIjoiYjllMWQ3Y2YiLCJpZCI6MTg3NzA2MDEsImVtYWlsIjoia2thdHRpZ2VuYWhhbGx5QHVjc2QuZWR1IiwidXNlcm5hbWUiOiJickd1M0pYWmJGIiwidXNlcl9zbHVnIjoiYnJHdTNKWFpiRiIsImF2YXRhciI6Imh0dHBzOi8vYXNzZXRzLmxlZXRjb2RlLmNvbS91c2Vycy9ickd1M0pYWmJGL2F2YXRhcl8xNzYyMTI0MTczLnBuZyIsInJlZnJlc2hlZF9hdCI6MTc3NTMzMTk0MiwiaXAiOiIyNjAzOjgwMDA6OGYwMDpmMTczOjI1MjI6ZTZkNjo2Mjk2OmVjNGIiLCJpZGVudGl0eSI6IjkxZTFhMmE0MWMwNzQxZjdmNDc2MTVhYjlkZTJmYjhhIiwiZGV2aWNlX3dpdGhfaXAiOlsiMWM2MTZiZjE0MDRmZjQwOTc4MTRlZWNiZGE0ZWU2MGQiLCIyNjAzOjgwMDA6OGYwMDpmMTczOjI1MjI6ZTZkNjo2Mjk2OmVjNGIiXX0.83P1K1A4Zrxq2-_TZoRB23r49kbx6_Uttpg4Fq3nL8Q"
+            },
+            {
+              "name": "x-csrftoken",
+              "value": "ikiDpEd31C84jIazM3IB6Um3hLuxwvqG"
+            },
+            {
+              "name": "Referer",
+              "value": "https://leetcode.com"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"query getSubmission($id: Int!) { submissionDetails(submissionId: $id) { code runtime memory lang { name } } }\",\n  \"variables\": {\n    \"id\": {{ Number($json.data.recentSubmissionList[0].id) }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        320
+      ],
+      "id": "5d41c359-ef64-4031-ae1c-176b946f4105",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a senior software engineer.\n\nAnalyze the following LeetCode solution:\n\n{{$json[\"data\"][\"submissionDetails\"][\"code\"]}}\n\nReturn:\n1. Time Complexity (with explanation)\n2. Space Complexity\n3. Possible optimizations\n4. Cleaner / more idiomatic solution\n5. Edge cases\n6. Better algorithm if possible",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1488,
+        320
+      ],
+      "id": "5c7d4aba-872e-429b-a7fa-18571e48705b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        592
+      ],
+      "id": "0e76da89-9a9c-4a51-93ea-e036427a3b99",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "mz9D4Qt0rTXJ1kdh",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "kkattigenahally@ucsd.edu",
+        "toEmail": "kkattigenahally@ucsd.edu",
+        "subject": "Leetcode solution analysis",
+        "emailFormat": "both",
+        "text": "=LeetCode Submission Analysis 🚀\n\n{{$json[\"text\"] || $json[\"output\"] || $json}}\n\n---\nGenerated via n8n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        320
+      ],
+      "id": "63f18085-c6f7-4ef9-b0f6-d96b9fd18beb",
+      "name": "Send an Email",
+      "webhookId": "69e5d853-5e91-4466-abce-96a7f4fcf265",
+      "credentials": {
+        "smtp": {
+          "id": "zQ9TF83V0JTHu2wI",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "21477951-34fb-4634-924f-d6b29a07e7f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d60a9d4dfffd5eb7434df16f752af6a407c61952a34eb07550e1752068595415"
+  },
+  "id": "F4C2IDtwIKmmGFwv",
+  "tags": []
+}
